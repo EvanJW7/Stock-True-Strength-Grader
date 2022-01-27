@@ -40,5 +40,4 @@ data = {'Stock': stockslist,
 df = pd.DataFrame(data)
 df = df.sort_values(by='Strength Score', ascending=False)
 df.reset_index(drop = True, inplace=True)
-df
-#Current date: 1/26/22.
+print(df)
