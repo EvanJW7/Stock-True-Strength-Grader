@@ -3,14 +3,15 @@ from bs4 import BeautifulSoup
 from sympy import per
 import yfinance as yf
 import pandas as pd
+import numpy as np
+
 PFA = []
 v = []
 score = []
-stocks = ['AAPL', 'MSFT', 'GOOG', 'AMZN', 'TSLA', 'FB', 'NVDA',  'V', 'JPM', 'UNH', 'BAC', 'WMT', 'HD', 'MA',
-          'XOM', 'PFE', 'DIS', 'ADBE', 'CRM', 'QCOM', 'AMD', 'AVGO', 'LLY', 'NKE', 'TMO', 'CMCSA', 'ORCL',
-         'COST', 'INTC', 'NFLX', 'PYPL', 'MRK', 'T', 'UPS', 'TXN', 'UNP', 'TMUS', 'CRWD', 'AMAT', 'SBUX',
-         'ABNB', 'SNOW', 'NOW', 'LRCX', 'SNAP', 'DKNG']
+stocks = ['AAPL', 'MSFT', 'TSLA', 'XOM', 'ABBV', 'CVX', 'QCOM', 'PFE', 'ROKU', 'ZM', 'AMZN', 'UPS', 
+          'NVDA', 'BAC', 'JPM', 'HOOD', 'SQ', 'HD', 'KR', 'WMT']
 stockslist = []
+
 for stock in stocks:
     try:
         ticker = yf.Ticker(stock)
@@ -25,7 +26,7 @@ for stock in stocks:
         vol = float(volatility.text)*100
         vol = round(vol, 2)
         v.append(vol)
-        strength_score = 0-percent_from_ATH + (vol)
+        strength_score = 0-percent_from_ATH + (vol/2)
         strength_score = round(strength_score, 2)
         score.append(strength_score)
         stockslist.append(stock)
@@ -40,4 +41,6 @@ data = {'Stock': stockslist,
 df = pd.DataFrame(data)
 df = df.sort_values(by='Strength Score', ascending=False)
 df.reset_index(drop = True, inplace=True)
+df.index = np.arange(1, len(df)+1)
 print(df)
+#Current date: 1/28/22
