@@ -5,12 +5,12 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
+stocks = ['XOM', 'AAPL', 'V', 'BAC', 'TSLA', 'AMZN', 'FB', 'GOOGL', 'NFLX', 'UPS', 'MA', 'ABBV', 'PFE', 'AMD', 'NVDA']
 PFA = []
 v = []
 score = []
-stocks = ['AAPL', 'MSFT', 'TSLA', 'XOM', 'ABBV', 'CVX', 'QCOM', 'PFE', 'ROKU', 'ZM', 'AMZN', 'UPS', 
-          'NVDA', 'BAC', 'JPM', 'HOOD', 'SQ', 'HD', 'KR', 'WMT']
 stockslist = []
+industry = []
 
 for stock in stocks:
     try:
@@ -30,10 +30,13 @@ for stock in stocks:
         strength_score = round(strength_score, 2)
         score.append(strength_score)
         stockslist.append(stock)
+        sector = ticker.info['sector']
+        industry.append(sector)
     except:
         continue
     
 data = {'Stock': stockslist,
+        'Industry': industry,
         'Percent From ATHs': PFA,
         'Volatility': v,
         'Strength Score': score}
@@ -43,4 +46,3 @@ df = df.sort_values(by='Strength Score', ascending=False)
 df.reset_index(drop = True, inplace=True)
 df.index = np.arange(1, len(df)+1)
 print(df)
-#Current date: 1/28/22
