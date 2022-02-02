@@ -5,12 +5,14 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
-stocks = ['XOM', 'AAPL', 'V', 'BAC', 'TSLA', 'AMZN', 'FB', 'GOOGL', 'NFLX', 'UPS', 'MA', 'ABBV', 'PFE', 'AMD', 'NVDA']
+stocks = ['AAPL', 'TSLA', 'QCOM', 'XOM', 'JNJ', 'MCD', 'NVDA', 'AMD', 'FB', 'NFLX', 'UNH', 'OXY', 'ABBV', 'PFE', 'F']
 PFA = []
 v = []
 score = []
 stockslist = []
 industry = []
+market_cap = []
+
 
 for stock in stocks:
     try:
@@ -26,17 +28,22 @@ for stock in stocks:
         vol = float(volatility.text)*100
         vol = round(vol, 2)
         v.append(vol)
-        strength_score = 0-percent_from_ATH + (vol/2)
+        mkcp = ticker.info['marketCap']
+        market_cap.append(round(mkcp/1000000000))
+        strength_score = (0-percent_from_ATH + (vol/2))/2 + ((mkcp/1000000000000))
         strength_score = round(strength_score, 2)
-        score.append(strength_score)
+        score.append(round(strength_score, 1))
         stockslist.append(stock)
         sector = ticker.info['sector']
         industry.append(sector)
+        
+        
     except:
         continue
     
 data = {'Stock': stockslist,
         'Industry': industry,
+        'Market Cap (B)': market_cap,
         'Percent From ATHs': PFA,
         'Volatility': v,
         'Strength Score': score}
@@ -46,3 +53,4 @@ df = df.sort_values(by='Strength Score', ascending=False)
 df.reset_index(drop = True, inplace=True)
 df.index = np.arange(1, len(df)+1)
 print(df)
+
