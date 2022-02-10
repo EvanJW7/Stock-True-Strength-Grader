@@ -5,13 +5,15 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
-stocks = ['AAPL', 'TSLA', 'QCOM', 'XOM', 'JNJ', 'MCD', 'NVDA', 'AMD', 'FB', 'NFLX', 'UNH', 'OXY', 'ABBV', 'PFE', 'F']
+stocks = ['AAPL', 'AMZN', 'TSLA', 'GOOGL', 'JNJ', 'ADBE', 'ZM', 'SQ', 'XOM', 'OXY', 'PG', 'MA', 'V', 'F', 'GE', 'PBF',
+          'NEX', 'DIS', 'GME', 'MU', 'SNAP', 'RBLX', 'DDOG']
 PFA = []
 v = []
 score = []
 stockslist = []
 industry = []
 market_cap = []
+short_float = []
 
 
 for stock in stocks:
@@ -30,20 +32,25 @@ for stock in stocks:
         v.append(vol)
         mkcp = ticker.info['marketCap']
         market_cap.append(round(mkcp/1000000000))
-        strength_score = (0-percent_from_ATH + (vol/2))/2 + ((mkcp/1000000000000))
-        strength_score = round(strength_score, 2)
-        score.append(round(strength_score, 1))
         stockslist.append(stock)
         sector = ticker.info['sector']
         industry.append(sector)
-        
+        shorts = ticker.info['shortPercentOfFloat']
+        shorts = float(shorts*100)
+        shorts = round(shorts, 2)
+        short_float.append(shorts)
+        strength_score = ((0-percent_from_ATH + (vol/2))/2 + (shorts/5))/2
+        strength_score = round(strength_score, 2)
+        score.append(round(strength_score, 1))
         
     except:
+        short_float.append(0)
         continue
     
 data = {'Stock': stockslist,
         'Industry': industry,
         'Market Cap (B)': market_cap,
+        '% Float Short': short_float,
         'Percent From ATHs': PFA,
         'Volatility': v,
         'Strength Score': score}
@@ -52,5 +59,6 @@ df = pd.DataFrame(data)
 df = df.sort_values(by='Strength Score', ascending=False)
 df.reset_index(drop = True, inplace=True)
 df.index = np.arange(1, len(df)+1)
-print(df)
+df
 
+#Current date: 2/10/22
