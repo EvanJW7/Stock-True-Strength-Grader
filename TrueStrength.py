@@ -5,47 +5,80 @@ import yfinance as yf
 import pandas as pd
 import numpy as np
 
-stocks = ['AAPL', 'MSFT', 'TSLA', 'XOM', 'OXY', 'SQ', 'PLTR', 'NVDA', 'KR', 'WMT', 'MCD', 'JPM', 'GS', 'BTU', 'NEX',
-         'KO', 'JNJ', 'MA', 'DDOG', 'MU', 'GOOGL', 'AMZN', 'TDOC', 'PEP', 'ROKU']
-          
-PFA = []
-v = []
-score = []
-stockslist = []
-industry = []
-market_cap = []
-short_float = []
-price = []
+stocks = ['BTU', 'NEX', 'OXY', 'KR', 'XOM', 'WMT', 'JNJ', 'KO', 'GOOGL', 'MA', 'AAPL', 'DDOG', 'PBF', 'AMZN', 'TSLA',
+         'PEP', 'MSFT', 'MCD', 'NVDA', 'GS', 'JPM', 'SQ', 'PLTR', 'ROKU', 'TDOC']
+
+
+PFA, v, score, stockslist, industry, market_cap, short_float, price, beta = [], [], [], [], [], [], [], [], []
 
 for stock in stocks:
     ticker = yf.Ticker(stock)
-    current_price = ticker.info['currentPrice']
-    ATH = ticker.info['fiftyTwoWeekHigh']
+    
+    #Current Price
+    try:
+        current_price = ticker.info['currentPrice']
+    except:
+        current_price = 0
+        
+    #52-Week High
+    try:
+        ATH = ticker.info['fiftyTwoWeekHigh']
+    except:
+        ATH = 1
     percent_from_52 = round((1 - current_price/ATH)*100, 2)
-    PFA.append(percent_from_52)
+    
+    if percent_from_52 == 100:
+        PFA.append(0)
+    else:
+         PFA.append(percent_from_52)
+    
+    #Volatility
     url = f'https://www.alphaquery.com/stock/{stock}/volatility-option-statistics/180-day/historical-volatility'
     res = requests.get(url)
     soup = BeautifulSoup(res.content, 'lxml')
+    
     try:
         volatility = soup.findAll('div', class_ = "indicator-figure-inner")[0]
         vol = float(volatility.text)*100
         vol = round(vol, 2)
+        if vol == 0:
+            v.append("No data")
+        else:
+            v.append(vol)
+    except:
+        vol = "No Data"
         v.append(vol)
-    except IndexError:
-        v.append(50)
-    mkcp = ticker.info['marketCap']
-    if mkcp == None:
+    
+    #Market Cap
+    try:
+        mkcp = ticker.info['marketCap']
+        market_cap.append(round(mkcp/1000000000))
+    except:
         mkcp = 0
-    market_cap.append(round(mkcp/1000000000))
-    stockslist.append(stock)
-    industry.append(ticker.info['sector'])
-    shorts = ticker.info['shortPercentOfFloat']
-    if shorts == None:
+        market_cap.append("No data")
+ 
+    #Industry
+    try:
+        industry.append(ticker.info['sector'])
+    except:
+        industry.append("No data")
+    
+    #Short Float
+    try:
+        shorts = ticker.info['shortPercentOfFloat']
+        short_float.append(round(float(shorts*100), 2))
+    except:
         shorts = 0
-    short_float.append(round(float(shorts*100), 2))
-    strength_score = ((0-percent_from_52 + (vol/2))/2 + (shorts/5))/2 
-    strength_score = round(strength_score, 2)
-    score.append(round(strength_score, 1))
+        short_float.append("No data")
+    
+    #Strength Score
+    if mkcp == 0 or vol == 0:
+        score.append(0)
+    else:
+        strength_score = ((0-percent_from_52 + (vol/2))/2 + (shorts/5))/2
+        score.append(round(strength_score, 1))
+        
+    stockslist.append(stock)    
     price.append('$' + str(round(current_price, 2)))
         
 data = {'Stock': stockslist,
@@ -62,3 +95,5 @@ df = df.sort_values(by='Strength Score', ascending=False)
 df.reset_index(drop = True, inplace=True)
 df.index = np.arange(1, len(df)+1)
 print(df)
+
+#Current date: 4/26/22
