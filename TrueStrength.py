@@ -4,12 +4,14 @@ from sympy import per
 import yfinance as yf
 import pandas as pd
 import numpy as np
+from tqdm import tqdm, trange
+import time 
+from time import sleep
 
-stocks = ['BTU', 'NEX', 'OXY', 'KR', 'XOM', 'WMT', 'JNJ', 'KO', 'GOOGL', 'MA', 'AAPL', 'DDOG', 'PBF', 'AMZN', 'TSLA',
+stocks = ['XENE', 'NEX', 'OXY', 'KR', 'XOM', 'WMT', 'JNJ', 'KO', 'GOOGL', 'MA', 'AAPL', 'DDOG', 'PBF', 'AMZN', 'TSLA',
          'PEP', 'MSFT', 'MCD', 'NVDA', 'GS', 'JPM', 'SQ', 'PLTR', 'ROKU', 'TDOC']
 
-
-PFA, v, score, stockslist, industry, market_cap, short_float, price, beta = [], [], [], [], [], [], [], [], []
+PFA, v, score, stockslist, industry, market_cap, short_float, price, beta, dividend = [], [], [], [], [], [], [], [], [], []
 
 for stock in stocks:
     ticker = yf.Ticker(stock)
@@ -30,7 +32,7 @@ for stock in stocks:
     if percent_from_52 == 100:
         PFA.append(0)
     else:
-         PFA.append(percent_from_52)
+         PFA.append(str(percent_from_52) + '%')
     
     #Volatility
     url = f'https://www.alphaquery.com/stock/{stock}/volatility-option-statistics/180-day/historical-volatility'
@@ -44,7 +46,7 @@ for stock in stocks:
         if vol == 0:
             v.append("No data")
         else:
-            v.append(vol)
+            v.append(str(round(vol, 1)) + '%')
     except:
         vol = "No Data"
         v.append(vol)
@@ -66,16 +68,19 @@ for stock in stocks:
     #Short Float
     try:
         shorts = ticker.info['shortPercentOfFloat']
-        short_float.append(round(float(shorts*100), 2))
+        shorts = round(float(shorts*100), 2)
+        shortss = str(shorts) + '%'
+        short_float.append(shortss)
     except:
         shorts = 0
         short_float.append("No data")
     
     #Strength Score
-    if mkcp == 0 or vol == 0:
-        score.append(0)
+    if vol == 0:
+        score.append("N/A")
     else:
-        strength_score = ((0-percent_from_52 + (vol/2))/2 + (shorts/5))/2
+        strength_score = ((0-percent_from_52 + (vol/1.5))/2 + (shorts/5))/2
+        strength_score += (div/10)
         score.append(round(strength_score, 1))
         
     stockslist.append(stock)    
@@ -94,6 +99,5 @@ df = pd.DataFrame(data)
 df = df.sort_values(by='Strength Score', ascending=False)
 df.reset_index(drop = True, inplace=True)
 df.index = np.arange(1, len(df)+1)
-print(df)
 
-#Current date: 4/26/22
+print(df)
