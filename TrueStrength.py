@@ -80,7 +80,6 @@ for stock in stocks:
         score.append("N/A")
     else:
         strength_score = ((0-percent_from_52 + (vol/1.5))/2 + (shorts/5))/2
-        strength_score += (div/10)
         score.append(round(strength_score, 1))
         
     stockslist.append(stock)    
