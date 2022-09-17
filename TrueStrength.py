@@ -4,9 +4,6 @@ from sympy import per
 import yfinance as yf
 import pandas as pd
 import numpy as np
-from tqdm import tqdm, trange
-import time 
-from time import sleep
 
 stocks = ['XENE', 'NEX', 'OXY', 'KR', 'XOM', 'WMT', 'JNJ', 'KO', 'GOOGL', 'MA', 'AAPL', 'DDOG', 'PBF', 'AMZN', 'TSLA',
          'PEP', 'MSFT', 'MCD', 'NVDA', 'GS', 'JPM', 'SQ', 'PLTR', 'ROKU', 'TDOC']
