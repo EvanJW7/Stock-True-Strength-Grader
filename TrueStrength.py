@@ -91,6 +91,7 @@ data = {'Stock': stockslist,
         'Volatility': v,
         'Strength Score': score}
 
+pd.set_option('display.max_rows', None)
 df = pd.DataFrame(data)
 df = df.sort_values(by='Strength Score', ascending=False)
 df.reset_index(drop = True, inplace=True)
