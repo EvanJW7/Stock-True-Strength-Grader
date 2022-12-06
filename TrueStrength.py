@@ -7,7 +7,6 @@ import numpy as np
 #ENTER DESIRED STOCK SYMBOLS HERE
 stocks = []
 
-
 def main():
     PFA, v, score, stockslist, industry, market_cap, short_float, price, beta, dividend = [], [], [], [], [], [], [], [], [], []
     
