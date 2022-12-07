@@ -7,7 +7,7 @@ import numpy as np
 #ENTER DESIRED STOCK SYMBOLS HERE
 stocks = []
 
-def main():
+def main(stocks):
     PFA, v, score, stockslist, industry, market_cap, short_float, price, beta, dividend = [], [], [], [], [], [], [], [], [], []
     
     for stock in stocks:
@@ -100,4 +100,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(stocks)
